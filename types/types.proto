@@ -1,0 +1,91 @@
+syntax = "proto3";
+package types;
+
+// Proposal 
+message Proposal {
+	uint64 proposalNumber = 1;
+	string value = 2;
+}
+
+// Request
+message Request {
+	oneof value{
+		RequestPrepare prepare = 1;
+		RequestAccept accept = 2;
+		RequestChosen chosen = 3;
+	}
+}
+
+message RequestPrepare{
+	string proposerID = 1;
+	uint64 proposalNumber = 2;
+}
+
+message RequestAccept{
+	string proposerID = 1;
+	Proposal proposal = 2;
+}
+
+message RequestChosen{
+	string proposerID = 1;
+	Proposal proposal = 2;
+}
+
+// Response
+message Response {
+	oneof value{
+		ResponsePrepare prepare = 1;
+		ResponseReject reject = 2;
+		ResponseAccept accept = 3;
+		ResponseChosen chosen = 4;
+	}
+}
+
+message ResponsePrepare{
+	string acceptorID = 1;
+	Proposal proposal = 2;
+}
+
+message ResponseReject{
+	string acceptorID = 1;
+}
+
+message ResponseAccept {
+	string acceptorID = 1;
+}
+
+message ResponseChosen{}
+
+// Updates 
+message Update {
+	oneof value{
+		UpdateAccept accept = 1;
+		UpdateChosen chosen = 2;
+	}
+}
+
+message UpdateAccept {
+	string acceptorID = 1;
+	Proposal proposal = 2;
+}
+
+message UpdateChosen {
+	string acceptorID = 1;
+	Proposal proposal = 2;
+}
+
+// Decision
+message Decision {
+	string learnerID = 1;
+	Proposal proposal = 2;
+}
+
+// Empty
+message Empty{}
+
+// Agent
+service Agent {
+	rpc HandleRequest (Request) returns (Response);
+	rpc HandleUpdate(Update) returns (Empty);
+	rpc HandleDecision(Decision) returns (Empty);
+}
